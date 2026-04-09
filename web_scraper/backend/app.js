@@ -1,9 +1,11 @@
 import express from "express";
 import Quote from "../backend/models/quotes.model.js";
+import cors from "cors";
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/quotes", async (req, res) => {
   try {
