@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes</title>
+    <style>
+        .quote {
+            color: rgb(39, 39, 2);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quotes Scrapper</h1>
+
+    <div class="container">
+        <button class="button" type="button">Get quotes</button>
+        <p class="msg">No quotes</p>
+        <div class="quotes"></div>
+    </div>
+    <script>
+        const btn = document.querySelector(".button");
+        const msg = document.querySelector(".msg");
+        const quotesContainer = document.querySelector(".quotes");
+
+        async function fetchData() {
+            try {
+                const res = await fetch("http://localhost:5050/quotes");
+
+                if (!res.ok) {
+                    msg.textContent = "Failed to fetch data";
+                    return [];
+                }
+
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                console.log(error);
+                msg.textContent = "Error occurred";
+                return [];
+            }
+        }
+
+        btn.addEventListener("click", async () => {
+            msg.textContent = "Loading...";
+            quotesContainer.innerHTML = "";
+
+            const data = await fetchData();
+
+            if (data.length === 0) {
+                msg.textContent = "No quotes found";
+                return;
+            }
+
+            msg.textContent = "";
+
+            data.forEach((d) => {
+                const quote = document.createElement("div");
+                quote.classList.add("quote");
+
+                quote.innerHTML = `
+                    <h3>${d.author}</h3>
+                    <p>${d.quote}</p>
+                `;
+
+                quotesContainer.appendChild(quote);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
