@@ -26,7 +26,8 @@
     <h1>Quotes Scrapper</h1>
 
     <div class="container">
-        <button class="button" type="button">Get quotes</button>
+        <button class="scrape-btn">Run Scraper</button>
+        <button class="button">Get quotes</button>
         <p class="msg">No quotes</p>
         <div class="quotes"></div>
     </div>
@@ -34,6 +35,27 @@
         const btn = document.querySelector(".button");
         const msg = document.querySelector(".msg");
         const quotesContainer = document.querySelector(".quotes");
+
+        const scrapeBtn = document.querySelector(".scrape-btn");
+        btn.disabled = true;
+        scrapeBtn.addEventListener("click", async () => {
+            msg.textContent = "Scraping in progress...";
+
+            try {
+                const res = await fetch("http://localhost:5050/scrape", {
+                    method: "POST"
+                });
+
+                const data = await res.json();
+
+                msg.textContent = data.message;
+                btn.disabled = false;
+
+            } catch (error) {
+                console.log(error);
+                msg.textContent = "Scraping failed";
+            }
+        });
 
         async function fetchData() {
             try {
