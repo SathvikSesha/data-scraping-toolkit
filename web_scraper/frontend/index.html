@@ -7,7 +7,17 @@
     <title>Quotes</title>
     <style>
         .quote {
-            color: rgb(39, 39, 2);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .quote h3 {
+            color: rgb(102, 101, 101);
+        }
+
+        .quote p {
+            color: rgb(53, 2, 2);
         }
     </style>
 </head>
@@ -43,7 +53,8 @@
             }
         }
 
-        btn.addEventListener("click", async () => {
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
             msg.textContent = "Loading...";
             quotesContainer.innerHTML = "";
 
