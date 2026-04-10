@@ -31,13 +31,63 @@
         <p class="msg">No quotes</p>
         <div class="quotes"></div>
     </div>
+    <div class="emails">
+        <input type="text" class="url-input" placeholder="Enter website URL" />
+        <button class="email-btn">Extract Emails</button>
+    </div>
     <script>
         const btn = document.querySelector(".button");
         const msg = document.querySelector(".msg");
         const quotesContainer = document.querySelector(".quotes");
-
         const scrapeBtn = document.querySelector(".scrape-btn");
         btn.disabled = true;
+        const emailBtn = document.querySelector(".email-btn");
+        const urlInput = document.querySelector(".url-input");
+        const emailContainer = document.querySelector(".emails");
+
+        emailBtn.addEventListener("click", async () => {
+            const url = urlInput.value;
+
+            if (!url) {
+                msg.textContent = "Enter a valid URL";
+                return;
+            }
+
+            msg.textContent = "Extracting emails...";
+            emailContainer.innerHTML = "";
+
+            try {
+                await fetch("http://localhost:5050/scrape-emails", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                // 🔥 Fetch extracted emails
+                const res = await fetch("http://localhost:5050/emails");
+                const emails = await res.json();
+
+                if (emails.length === 0) {
+                    msg.textContent = "No emails found";
+                    return;
+                }
+
+                msg.textContent = "Emails extracted:";
+
+                emails.forEach((e) => {
+                    const div = document.createElement("div");
+                    div.textContent = e.email;
+                    emailContainer.appendChild(div);
+                });
+
+            } catch (error) {
+                console.log(error);
+                msg.textContent = "Error extracting emails";
+            }
+        });
+
         scrapeBtn.addEventListener("click", async () => {
             msg.textContent = "Scraping in progress...";
 
