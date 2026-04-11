@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Email Analyzer</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .email {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Email Analyzer Dashboard</h1>
+
+    <input type="text" class="keyword" placeholder="Enter keyword">
+    <button class="analyze-btn">Analyze Emails</button>
+
+    <p class="msg"></p>
+    <p class="count"></p>
+
+    <div class="emails"></div>
+
+    <script>
+        const analyzeBtn = document.querySelector(".analyze-btn");
+        const keywordInput = document.querySelector(".keyword");
+        const msg = document.querySelector(".msg");
+        const emailContainer = document.querySelector(".emails");
+        const countText = document.querySelector(".count");
+
+        analyzeBtn.addEventListener("click", async () => {
+            const keyword = keywordInput.value.trim();
+
+            if (!keyword) {
+                msg.textContent = "Enter keyword";
+                return;
+            }
+
+            msg.textContent = "Analyzing emails...";
+            emailContainer.innerHTML = "";
+            countText.textContent = "";
+
+            try {
+                // 🔥 Step 1: Run analysis
+                const analyzeRes = await fetch("http://localhost:5050/analyze-emails", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ keyword })
+                });
+
+                const analyzeData = await analyzeRes.json();
+
+
+                const res = await fetch("http://localhost:5050/emails");
+                const emails = await res.json();
+
+                msg.textContent = "Analysis complete!";
+                countText.textContent = `Total emails found: ${analyzeData.count}`;
+
+                emails.forEach(e => {
+                    const div = document.createElement("div");
+                    div.classList.add("email");
+
+                    div.innerHTML = `
+                <h3>${e.sender}</h3>
+                <p>${e.subject}</p>
+                <small>${e.date}</small>
+            `;
+
+                    emailContainer.appendChild(div);
+                });
+
+            } catch (error) {
+                console.log(error);
+                msg.textContent = "Error occurred";
+            }
+        });
+    </script>
+
+</body>
+
+</html>
